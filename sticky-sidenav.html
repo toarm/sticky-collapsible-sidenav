@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<link rel="import" href="../polymer/polymer.html">
+<dom-module id="sticky-sidenav">
+    <style>
+        :host {
+            position: absolute;
+            top: 20px;
+        }
+
+        :host([align="left"]) {
+            left: 0;
+        }
+
+        :host([align="right"]) {
+            right: 0;
+        }
+
+        :host([align="left"]) #content {
+            transform: translate(0%, 0%);
+        }
+
+        :host([align="left"]) #caption {
+            transform: translate(100%, 0%);
+        }
+
+        #caption {
+            position: absolute;
+            right: 0;
+            transition: transform 0.3s;
+            cursor: pointer;
+            @apply(--caption-mixin);
+        }
+
+        #content {
+            position: absolute;
+            transition: transform 0.3s;
+            transform: translate(100%, 0%);
+            right: 0;
+            text-align: left;
+            @apply(--content-mixin);
+        }
+
+        .transformZero {
+            transform: translate(0%, 0%) !important;
+        }
+
+        .transformX {
+            transform: translate(100%, 0%) !important;
+        }
+    </style>
+    <template>
+        <div id="caption" on-tap="_handleTap">
+            <slot name="caption">Test</slot>
+        </div>
+        <div id="content">
+            <slot name="content"></slot>
+        </div>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: "sticky-sidenav",
+        properties: {
+            opened: {
+                type: Boolean,
+                observer: "_openChanged"
+            },
+            align: {
+                type: String,
+                value: "left" // left/right
+            }
+        },
+        init: function () {
+            var element = Polymer.dom(this).querySelector("[data-toggle]");
+            if (element) {
+                this.listen(element, "tap", "_handleTap");
+            }
+        },
+        attached: function () {
+            this.init();
+        },
+        _handleTap: function () {
+            this.toggleAttribute("opened", !this.opened);
+        },
+        _openChanged: function () {
+            if (this.align === "right") {
+                this.$.content.classList.toggle("transformZero");
+                this.$.caption.classList.toggle("transformX");
+            } else {
+                this.$.caption.classList.toggle("transformZero");
+                this.$.content.classList.toggle("transformX");
+            }
+
+        }
+    });
+</script>
