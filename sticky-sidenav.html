@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="bower_components/polymer/polymer.html">
 <dom-module id="sticky-sidenav">
     <style>
         :host {
@@ -95,7 +95,7 @@
         detached: function () {
             var element = Polymer.dom(this).querySelector("[data-toggle]");
             if (element) {
-                this.unlisten(element, "tap");
+                this.unlisten(element, "tap", "_handleTap");
             }
         },
         _handleTap: function () {
