@@ -7,6 +7,10 @@
             top: 20px;
         }
 
+        :host([unresolved]) {
+            opacity: 0;
+        }
+
         :host([align="left"]) {
             left: 0;
         }
@@ -21,6 +25,10 @@
 
         :host([align="left"]) #caption {
             transform: translate(100%, 0%);
+        }
+
+        .noTransition {
+            transition: 0s !important;
         }
 
         #caption {
@@ -49,10 +57,10 @@
         }
     </style>
     <template>
-        <div id="caption" on-tap="_handleTap">
+        <div id="caption" on-tap="_handleTap" class="noTransition">
             <slot name="caption">Test</slot>
         </div>
-        <div id="content">
+        <div id="content" class="noTransition">
             <slot name="content"></slot>
         </div>
     </template>
@@ -71,14 +79,24 @@
                 value: "left" // left/right
             }
         },
-        init: function () {
+        ready: function () {
+            this.removeAttribute("unresolved");
+            this.async(function () {
+                this.$.caption.classList.remove("noTransition");
+                this.$.content.classList.remove("noTransition");
+            }, 1000);
+        },
+        attached: function () {
             var element = Polymer.dom(this).querySelector("[data-toggle]");
             if (element) {
                 this.listen(element, "tap", "_handleTap");
             }
         },
-        attached: function () {
-            this.init();
+        detached: function () {
+            var element = Polymer.dom(this).querySelector("[data-toggle]");
+            if (element) {
+                this.unlisten(element, "tap");
+            }
         },
         _handleTap: function () {
             this.toggleAttribute("opened", !this.opened);
